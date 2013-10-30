@@ -1,3 +1,19 @@
+Ember.Test.registerHelper('exists', function (app, selector, quantity) {
+  if (quantity === undefined) { quantity = 1; }
+
+  return wait()
+    .find(selector)
+    .then(function(el) {
+      assertLength(el, quantity);
+    });
+});
+
+Ember.Test.registerHelper('assertLength', function (app, el, quantity) {
+  if (quantity === undefined) { quantity = 1; }
+
+  equal(el.length, quantity, "should be " + quantity + " of " + el);
+});
+
 App.rootElement = "#ember-testing";
 App.setupForTesting();
 App.injectTestHelpers();
@@ -9,35 +25,30 @@ module("Integration tests", {
 });
 
 test("No feats by default", function() {
-  visit("/character").then(function() {
-    equal(find("ul#character-feats").length, 1, "there should be feats list");
-    equal(find("ul#character-feats > li").length, 0, "there should be no feats by default");
-  });
+  visit("/character")
+    .exists("#character-feats")
+    .exists("#character-feats > li", 0)
 });
 
 test("Choosing race popupates feats list", function() {
   visit("/character")
     .fillIn("#select-race", "elf")
-    .then(function() {
-      equal(find("ul#character-feats > li").length, 2, "should have two feats");
-    });
+    .exists("ul#character-feats > li", 2);
 });
 
 test("Display welcome message on main page", function () {
-  visit("/").find("h1").then(function(el) {
-    equal(el.length, 1, "H1 tag must be present");
-  });
+  visit("/").exists("h1")
 });
 
 module("Unit Test");
 
 test("Character's feats depends on race", function() {
   var character = App.Character.create();
-  equal(character.get("feats").length, 0, "no race - no feats");
+  assertLength(character.get("feats"), 0)
 
   character.set("race", "elf");
-  equal(character.get("feats").length, 2, "elf's got two feats");
+  assertLength(character.get("feats"), 2)
 
   character.set("race", "dwarf");
-  equal(character.get("feats").length, 1, "dwarf's got one feat");
+  assertLength(character.get("feats"), 1)
 });
