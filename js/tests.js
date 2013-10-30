@@ -24,6 +24,13 @@ module("Integration tests", {
   }
 });
 
+test("Save button behaviour", function() {
+  visit("/character")
+    .exists("#save-btn", 0)
+    .fillIn("#select-race", "elf")
+    .exists("#save-btn");
+});
+
 test("No feats by default", function() {
   visit("/character")
     .exists("#character-feats")
@@ -42,6 +49,16 @@ test("Display welcome message on main page", function () {
 
 module("Unit Test");
 
+test("Controller computed property test", function() {
+  controller = App.__container__.lookup("controller:character")
+  model = App.Character.create();
+  controller.set("model", model);
+
+  equal(controller.get("hasFeats"), false, "no feats by default");
+  model.set("race", "elf");
+  equal(controller.get("hasFeats"), true, "feats for elf");
+});
+
 test("Character's feats depends on race", function() {
   var character = App.Character.create();
   assertLength(character.get("feats"), 0)
@@ -51,4 +68,5 @@ test("Character's feats depends on race", function() {
 
   character.set("race", "dwarf");
   assertLength(character.get("feats"), 1)
+  equal(character.get("feats").length, 1, "dwarf's got one feat");
 });

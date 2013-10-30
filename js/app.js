@@ -11,7 +11,11 @@ App.CharacterRoute = Ember.Route.extend({
 });
 
 App.CharacterController = Ember.ObjectController.extend({
-  races: [ "", "elf", "dwarf" ]
+  races: [ "", "elf", "dwarf" ],
+
+  hasFeats: function() {
+    return Boolean(this.get("feats").length);
+  }.property('model.feats')
 });
 
 App.Character = Ember.Object.extend({
