@@ -13,6 +13,12 @@ App.CharacterRoute = Ember.Route.extend({
 App.CharacterController = Ember.ObjectController.extend({
   races: [ "", "elf", "dwarf" ],
 
+  actions: {
+    save: function() {
+      this.get("model").save();
+    }
+  },
+
   hasFeats: function() {
     return Boolean(this.get("feats").length);
   }.property('model.feats')
@@ -20,6 +26,17 @@ App.CharacterController = Ember.ObjectController.extend({
 
 App.Character = Ember.Object.extend({
   race: "",
+
+  save: function() {
+    return Ember.$.post("/characters", this.serialize());
+  },
+
+  serialize: function() {
+    return {
+      race: this.get('race'),
+      feats: this.get('feats')
+    }
+  },
 
   feats: function() {
     if (this.get("race") === "elf") {

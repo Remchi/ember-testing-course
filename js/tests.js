@@ -18,6 +18,27 @@ App.rootElement = "#ember-testing";
 App.setupForTesting();
 App.injectTestHelpers();
 
+module("Ajax tests", {
+  setup: function() {
+    App.reset();
+  },
+  teardown: function() {
+    jQuery.ajax.restore();
+  }
+});
+
+test("Sending ajax request to server on saving", function() {
+  sinon.stub(jQuery, "ajax");
+  visit("/character")
+    .fillIn("#select-race", "elf")
+    .click("#save-btn")
+    .then(function() {
+      ok(jQuery.ajax.called, "ajax has been sent");
+      ok(jQuery.ajax.calledWithMatch({ url: "/characters", type: "post"}), "ajax has been sent");
+    });
+});
+
+
 module("Integration tests", {
   setup: function() {
     App.reset();
