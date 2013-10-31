@@ -14,6 +14,8 @@ Ember.Test.registerHelper('assertLength', function (app, el, quantity) {
   equal(el.length, quantity, "should be " + quantity + " of " + el);
 });
 
+document.write('<div id="ember-container"><div id="ember-testing"></div></div>');
+
 App.rootElement = "#ember-testing";
 App.setupForTesting();
 App.injectTestHelpers();

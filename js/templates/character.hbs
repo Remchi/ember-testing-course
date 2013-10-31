@@ -1,0 +1,20 @@
+
+  {{#if errorMessage}}
+  <p id="error-message">{{errorMessage}}</p>
+  {{/if}}
+
+  {{view Ember.Select
+    id="select-race"
+    content=races
+    value=race
+  }}
+
+  <ul id="character-feats">
+  {{#each feats}}
+  <li>{{this}}</li>
+  {{/each}}
+  </ul>
+
+  {{#if hasFeats}}
+  <button {{action "save"}} id="save-btn">Save</button>
+  {{/if}}
