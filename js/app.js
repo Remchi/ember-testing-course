@@ -15,7 +15,13 @@ App.CharacterController = Ember.ObjectController.extend({
 
   actions: {
     save: function() {
-      this.get("model").save();
+      var self = this;
+      var promise = this.get("model").save();
+      promise.fail(function(response) {
+        Ember.run(function() {
+          self.set('errorMessage', response.responseText);
+        });
+      });
     }
   },
 

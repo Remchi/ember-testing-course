@@ -18,23 +18,45 @@ App.rootElement = "#ember-testing";
 App.setupForTesting();
 App.injectTestHelpers();
 
+var server;
+
 module("Ajax tests", {
   setup: function() {
     App.reset();
+    server = sinon.fakeServer.create();
+    server.autoRespond = true;
   },
   teardown: function() {
-    jQuery.ajax.restore();
+    server.restore();
   }
 });
 
+test("Display error message when server responds with error", function() {
+  server.respondWith("post", "/characters", [
+    401, {}, "Something went wrong"]);
+
+  visit("/character")
+    .fillIn("#select-race", "elf")
+    .click("#save-btn")
+    .find("#error-message")
+    .then(function(el) {
+      equal(el.text(), "Something went wrong", "must display the error message");
+    });
+});
+
 test("Sending ajax request to server on saving", function() {
-  sinon.stub(jQuery, "ajax");
+  json = {
+    race: 'elf',
+    feats: [ "Slender", "Night Vision" ]
+  };
+  server.respondWith("post", "/characters")
   visit("/character")
     .fillIn("#select-race", "elf")
     .click("#save-btn")
     .then(function() {
-      ok(jQuery.ajax.called, "ajax has been sent");
-      ok(jQuery.ajax.calledWithMatch({ url: "/characters", type: "post"}), "ajax has been sent");
+      equal(server.requests.length, 1, "");
+      equal(server.requests[0].url, "/characters", "");
+      equal(server.requests[0].requestBody, Ember.$.param(json), "");
     });
 });
 

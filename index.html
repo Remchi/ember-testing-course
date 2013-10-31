@@ -20,6 +20,10 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="character">
+  {{#if errorMessage}}
+  <p id="error-message">{{errorMessage}}</p>
+  {{/if}}
+
   {{view Ember.Select
     id="select-race"
     content=races
